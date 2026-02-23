@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rolling Hills Elementary - Discipline Tracker</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">🦅</div>
+    <h2>Rolling Hills</h2>
+    <div class="mascot">Discipline Tracker</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')">📊 Dashboard</div>
+    <div class="nav-item" data-page="new-referral" onclick="showPage('new-referral')">📝 New Referral</div>
+    <div class="nav-item" data-page="referrals" onclick="showPage('referrals')">📋 All Referrals</div>
+    <div class="nav-item" data-page="students" onclick="showPage('students')">👤 Student Profiles</div>
+    <div class="nav-item" data-page="communications" onclick="showPage('communications')">💬 Communications</div>
+    <div class="nav-item" data-page="analytics" data-perm="viewAnalytics" onclick="showPage('analytics')">📈 Analytics</div>
+    <div class="nav-item" data-page="resources" onclick="showPage('resources')">📚 PBIS Resources</div>
+
+    <div class="nav-section" data-perm="adminDashboard">Administration</div>
+    <div class="nav-item" data-page="admin-dashboard" data-perm="adminDashboard" onclick="showPage('admin-dashboard')">🏢 Admin Dashboard</div>
+    <div class="nav-item" data-page="manage-staff" data-perm="manageStaff" onclick="showPage('manage-staff')">👥 Manage Staff</div>
+    <div class="nav-item" data-page="manage-students" data-perm="manageStudents" onclick="showPage('manage-students')">🎓 Manage Students</div>
+    <div class="nav-item" data-page="permissions" data-perm="managePermissions" onclick="showPage('permissions')">🔒 Permissions</div>
+    <div class="nav-item" data-page="settings" data-perm="manageSettings" onclick="showPage('settings')">⚙️ Settings</div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">👤</div>
+      <div><div id="user-name">Loading...</div><div id="user-role">—</div></div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+  <div class="header"><h1 id="page-title">Dashboard</h1></div>
+  <div class="content">
+
+    <!-- Dashboard -->
+    <div class="page active" id="page-dashboard">
+      <div id="dash-stats" class="stats-row"></div>
+      <div id="dash-charts" class="charts-grid"></div>
+      <div class="card">
+        <h2>📋 Recent Referrals</h2>
+        <table><thead><tr><th>Date</th><th>Student</th><th>Grade</th><th>Type</th><th>Behaviors</th><th>Status</th><th></th></tr></thead>
+        <tbody id="dash-recent"></tbody></table>
+      </div>
+    </div>
+
+    <!-- New Referral -->
+    <div class="page" id="page-new-referral">
+      <div class="card" id="referral-form-content">Loading form...</div>
+    </div>
+
+    <!-- All Referrals -->
+    <div class="page" id="page-referrals">
+      <div class="filter-bar">
+        <select id="filter-type" onchange="renderReferrals()"><option value="">All Types</option><option value="major">Major</option><option value="minor">Minor</option></select>
+        <select id="filter-grade" onchange="renderReferrals()"><option value="">All Grades</option><option>K</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+        <select id="filter-status" onchange="renderReferrals()"><option value="">All Status</option><option value="open">Open</option><option value="in-review">In Review</option><option value="resolved">Resolved</option></select>
+        <input type="text" id="filter-search" placeholder="Search..." oninput="renderReferrals()">
+        <span id="referral-count" style="font-size:12px;color:var(--text-light);"></span>
+      </div>
+      <div class="card">
+        <table><thead><tr><th>Date</th><th>Student</th><th>Grade</th><th>Staff</th><th>Type</th><th>Behaviors</th><th>Location</th><th>Status</th><th></th></tr></thead>
+        <tbody id="all-referrals-table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Students -->
+    <div class="page" id="page-students">
+      <div class="filter-bar">
+        <select id="student-grade-filter" onchange="renderStudentsList()"><option value="">All Grades</option><option>K</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+        <input type="text" id="student-search" placeholder="Search students..." oninput="renderStudentsList()">
+      </div>
+      <div class="card">
+        <table><thead><tr><th>Student</th><th>Grade</th><th>Major</th><th>Minor</th><th>Total</th><th>Teacher</th><th>Tier</th><th></th></tr></thead>
+        <tbody id="students-table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Communications -->
+    <div class="page" id="page-communications">
+      <div class="filter-bar">
+        <select id="comm-filter" onchange="renderComms()"><option value="">All Types</option><option value="parent-letter">Parent Letters</option><option value="teacher-strategy">Teacher Strategies</option><option value="admin-notification">Admin Notifications</option></select>
+        <input type="text" id="comm-search" placeholder="Search..." oninput="renderComms()">
+      </div>
+      <div id="comm-list"></div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="page" id="page-analytics"><div id="analytics-content">Loading analytics...</div></div>
+
+    <!-- Admin Dashboard -->
+    <div class="page" id="page-admin-dashboard"><div id="admin-content">Loading...</div></div>
+
+    <!-- Manage Staff -->
+    <div class="page" id="page-manage-staff">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2>Staff Members</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="editStaff(null)">+ Add Staff</button>
+          <button class="btn btn-info" onclick="showBulkImport('staff')">📥 Bulk Import</button>
+        </div>
+      </div>
+      <div class="card">
+        <table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Grade</th><th>Title</th><th>Status</th><th></th></tr></thead>
+        <tbody id="staff-table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Manage Students -->
+    <div class="page" id="page-manage-students">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2>Student Records</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="editStudent(null)">+ Add Student</button>
+          <button class="btn btn-info" onclick="showBulkImport('students')">📥 Bulk Import</button>
+        </div>
+      </div>
+      <div class="card">
+        <table><thead><tr><th>Name</th><th>ID</th><th>Grade</th><th>Teacher</th><th>Parent Email</th><th>Flags</th><th></th></tr></thead>
+        <tbody id="manage-students-table"></tbody></table>
+      </div>
+    </div>
+
+    <!-- Permissions -->
+    <div class="page" id="page-permissions">
+      <div class="card" id="permissions-content">Loading permissions...</div>
+    </div>
+
+    <!-- Resources -->
+    <div class="page" id="page-resources">
+      <div id="resources-grid">Loading resources...</div>
+    </div>
+
+    <!-- Settings -->
+    <div class="page" id="page-settings"><div id="settings-content">Loading settings...</div></div>
+
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
